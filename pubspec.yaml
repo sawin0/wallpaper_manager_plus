@@ -1,6 +1,6 @@
 name: wallpaper_manager_plus
 description: "A Flutter plugin that allows you to easily set wallpapers on Android devices, with support for home screen, lock screen, and both screens."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/sawin0/wallpaper_manager_plus
 
 environment:

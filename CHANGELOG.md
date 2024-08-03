@@ -1,3 +1,6 @@
+## 0.0.3
+* Wrote concise description for the plugin 
+
 ## 0.0.2
 
 * Fixed pub issues.
