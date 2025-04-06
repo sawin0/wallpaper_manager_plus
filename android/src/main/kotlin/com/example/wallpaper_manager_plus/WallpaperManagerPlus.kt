@@ -9,10 +9,11 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlinx.coroutines.*
 import java.io.IOException
 
 /** WallpaperManagerPlusPlugin */
-class WallpaperManagerPlus: FlutterPlugin, MethodCallHandler {
+class WallpaperManagerPlus : FlutterPlugin, MethodCallHandler {
   private lateinit var channel: MethodChannel
   private lateinit var context: Context
 
@@ -39,20 +40,34 @@ class WallpaperManagerPlus: FlutterPlugin, MethodCallHandler {
       return
     }
 
-    try {
-      val stream = data.inputStream()
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        wm.setStream(stream, null, false, location)
-      } else {
-        wm.setStream(stream)
+    CoroutineScope(Dispatchers.IO).launch {
+      try {
+        val stream = data.inputStream()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          wm.setStream(stream, null, false, location)
+        } else {
+          wm.setStream(stream)
+        }
+
+        withContext(Dispatchers.Main) {
+          result.success("Wallpaper set successfully")
+        }
+      } catch (e: IOException) {
+        e.printStackTrace()
+        withContext(Dispatchers.Main) {
+          result.error("IOException", "Failed to set wallpaper: ${e.localizedMessage}", null)
+        }
+      } catch (e: SecurityException) {
+        e.printStackTrace()
+        withContext(Dispatchers.Main) {
+          result.error("SecurityException", "Permission denied: ${e.localizedMessage}", null)
+        }
+      } catch (e: Exception) {
+        e.printStackTrace()
+        withContext(Dispatchers.Main) {
+          result.error("Exception", "Unexpected error: ${e.localizedMessage}", null)
+        }
       }
-      result.success("Wallpaper set successfully")
-    } catch (e: IOException) {
-      e.printStackTrace()
-      result.error("IOException", "Failed to set wallpaper: ${e.localizedMessage}", null)
-    } catch (e: Exception) {
-      e.printStackTrace()
-      result.error("Exception", "Unexpected error: ${e.localizedMessage}", null)
     }
   }
 
