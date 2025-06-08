@@ -1,4 +1,4 @@
-package com.example.wallpaper_manager_plus
+package np.com.sawin.wallpaper_manager_plus
 
 import android.app.WallpaperManager
 import android.content.Context

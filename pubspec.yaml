@@ -26,5 +26,5 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.sawin0.wallpaper_manager_plus
+        package: np.com.sawin.wallpaper_manager_plus
         pluginClass: WallpaperManagerPlus
