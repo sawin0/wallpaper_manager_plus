@@ -31,7 +31,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  wallpaper_manager_plus: ^0.0.1
+  wallpaper_manager_plus: ^1.0.1
 ```
 
 Import it in your Dart file:

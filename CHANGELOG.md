@@ -1,3 +1,6 @@
+## 1.0.1
+* Update README
+
 ## 1.0.0
 *  Set wallpaper on background mode to prevent UI freezes and ANRs
 
