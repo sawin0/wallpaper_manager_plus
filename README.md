@@ -1,72 +1,108 @@
-# Note
+# 📱 wallpaper\_manager\_plus
 
-This package is heavily inspired by the [wallpaper_manager_flutter](https://pub.dev/packages/wallpaper_manager_flutter) package and has an exact implementation. The original package seems not to be maintained by the maintainer, so this serves as an alternative for those who loved the wallpaper_manager_flutter package.
+**A modern, lightweight Flutter plugin to set wallpapers on Android Home Screen, Lock Screen, or both. Built for performance, reliability, and large image support.**
 
-If you encounter any issues or have suggestions for improvements, feel free to contribute or reach out!
+---
 
-
-
-# wallpaper_manager_plus
-
-A Plugin to set Wallpaper of HomeScreen,LockScreen and Both Screen without lag even for large images.
+## 🔔 Why Choose `wallpaper_manager_plus`?
 
 
-## Installation
+✅ **Built using Kotlin coroutines** to handle wallpaper setting in a background thread — effectively **preventing ANR (Application Not Responding)** issues common in older implementations.
 
-In the pubspec.yaml of your flutter project, add the following dependency:
+✅ Perfect for developers building wallpaper apps, personalization tools, or utilities requiring dynamic background changes.
 
-```dart
+📣 Have a feature request or bug to report? [Open an issue](https://github.com/your_repo_url/issues) or contribute via pull request!
+
+---
+
+## 🚀 Key Features
+
+* 🏠 Set wallpaper on **Home Screen**, **Lock Screen**, or **Both**
+* 🖼️ Seamless support for **large images**
+* 💾 Works with **cached network images** and **local files**
+* ⚡ Lightweight and **easy to integrate**
+* 🔄 Compatible with **Flutter null safety** and **latest Dart versions**
+
+---
+
+## 📦 Installation
+
+Add to your `pubspec.yaml`:
+
+```yaml
 dependencies:
   wallpaper_manager_plus: ^0.0.1
 ```
-In your dart file add the following import:
+
+Import it in your Dart file:
 
 ```dart
-  import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
+import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
 ```
-# Usage
 
-## Set Wallpaper from cache file
+---
 
-You can use flutter_cache_manager package to access the cached image files,
+## 🛠️ How to Use
 
-In the pubspec.yaml of your flutter project, add the following dependency:
+### 🔹 Set Wallpaper from Cached Network Image
 
-```dart
+To set a wallpaper from a remote image URL using caching, integrate the [`flutter_cache_manager`](https://pub.dev/packages/flutter_cache_manager):
+
+#### Step 1: Add dependency
+
+```yaml
 dependencies:
   flutter_cache_manager: ^3.4.0
 ```
 
-In your dart file add the following import:
+#### Step 2: Import packages
 
 ```dart
-  import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'dart:io';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
 ```
 
-Now pass the image url to the cache manager and await cachedimage and then pass the cached image to the plugin.
-
-Use this inside an async function.
+#### Step 3: Example code
 
 ```dart
-String url = '';  // Image url 
+String imageUrl = 'https://example.com/image.jpg';
+File file = await DefaultCacheManager().getSingleFile(imageUrl);
 
-String cachedimage = await DefaultCacheManager().getSingleFile(url);  //image file
+int location = WallpaperManagerPlus.HOME_SCREEN;
 
-int location = WallpaperManagerPlus.HOME_SCREEN;  //Choose screen type
-
-WallpaperManagerPlus().setWallpaper(cachedimage, location);   // Wrap with try catch for error management.
+await WallpaperManagerPlus().setWallpaper(file.path, location);
 ```
 
-Check the Example file for Better Understanding.
+📌 *Use a `try-catch` block for error handling.*
 
-## Set wallpaper from system file
+---
 
-Use this inside an async Function,
+### 🔹 Set Wallpaper from Local File
+
+Use a file from local storage:
 
 ```dart
-imagefile = /0/images/image.png,
+String imagePath = '/storage/emulated/0/Download/image.png';
+int location = WallpaperManagerPlus.HOME_SCREEN;
 
-location = WallpaperManagerPlus.HOME_SCREEN  //Choose screen type
-
-WallpaperManagerPlus().setWallpaper(imagefile, location);
+await WallpaperManagerPlus().setWallpaper(imagePath, location);
 ```
+
+---
+
+## 💡 Full Example
+
+Check out the [example/](example) directory for a complete working example.
+
+---
+
+## 🤝 Contribute to Development
+
+We welcome your contributions! If you want to:
+
+* Add new features
+* Fix bugs
+* Improve documentation
+
+Fork the repository and submit a pull request. Every contribution helps!
