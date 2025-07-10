@@ -1,6 +1,5 @@
 name: wallpaper_manager_plus
-description: >
-  A Flutter plugin to set wallpapers on Android: home screen, lock screen, or both. Uses Kotlin coroutines for efficient handling and prevents ANR issues.
+description: A Flutter plugin to set home screen and lock screen wallpapers on Android, with Kotlin coroutines for efficient handling.
 version: 1.0.2
 homepage: https://sawin.com.np
 repository: https://github.com/sawin0/wallpaper_manager_plus
