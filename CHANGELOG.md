@@ -1,3 +1,6 @@
+## 1.0.3
+* Plugin description shortened
+
 ## 1.0.2
 * Removed deprecated package attribute from AndroidManifest.xml to ensure compatibility with the latest Android Gradle Plugin and Flutter build system.
 
