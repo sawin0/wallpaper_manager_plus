@@ -1,7 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:description="@string/live_wallpaper_description"
-    android:thumbnail="@mipmap/ic_launcher"
-    android:author="@string/live_wallpaper_author"
-    android:settingsActivity="np.com.sawin.wallpaper_manager_plus.LiveWallpaperSettingsActivity" />
-
+<wallpaper xmlns:android="http://schemas.android.com/apk/res/android" />
