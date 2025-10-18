@@ -28,8 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final imageurl =
       'https://unsplash.com/photos/AnBzL_yOWBc/download?force=true&w=2400';
 
+  // Pexels video URL for live wallpaper example
+  final videoUrl = 'https://www.pexels.com/download/video/7121778/';
+
   String? selectedVideoPath;
   bool isPickingFile = false;
+  bool isDownloadingVideo = false;
+  double downloadProgress = 0.0;
 
   Future<void> _setWallpaper(int location) async {
     final file = await DefaultCacheManager().getSingleFile(imageurl);
@@ -110,13 +115,48 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _openLiveWallpaperPicker() async {
+  Future<void> _downloadAndSetLiveWallpaper() async {
+    setState(() {
+      isDownloadingVideo = true;
+      downloadProgress = 0.0;
+    });
+
     try {
-      final result = await wallpaperManagerPlus.openLiveWallpaperPicker();
-      if (mounted) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Downloading video from Pexels...')),
+      );
+
+      // Download the video file using cache manager
+      final fileInfo = await DefaultCacheManager().downloadFile(
+        videoUrl,
+        authHeaders: null,
+      );
+
+      if (!mounted) return;
+
+      if (fileInfo.file.existsSync()) {
+        final videoPath = fileInfo.file.path;
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result ?? 'Picker opened')),
+          const SnackBar(content: Text('Video downloaded! Opening wallpaper picker...')),
         );
+
+        // Set the downloaded video as live wallpaper
+        final result = await wallpaperManagerPlus.setLiveWallpaper(videoPath);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result ?? 'Live wallpaper picker opened')),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to download video')),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -124,7 +164,14 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(content: Text('Error: $e')),
         );
       }
-      debugPrint(e.toString());
+      debugPrint('Error downloading video: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isDownloadingVideo = false;
+          downloadProgress = 0.0;
+        });
+      }
     }
   }
 
@@ -200,9 +247,78 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
+            // Example: Download video from internet
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                color: Colors.blue.shade900,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.cloud_download, color: Colors.blue),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'Download from Internet',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Example: Pexels Video',
+                        style: TextStyle(fontSize: 12, color: Colors.white70),
+                      ),
+                      const SizedBox(height: 12),
+                      if (isDownloadingVideo)
+                        Column(
+                          children: [
+                            const LinearProgressIndicator(),
+                            const SizedBox(height: 8),
+                            const Text('Downloading video...', style: TextStyle(fontSize: 12)),
+                          ],
+                        )
+                      else
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: _downloadAndSetLiveWallpaper,
+                            icon: const Icon(Icons.download),
+                            label: const Text('Download & Set Pexels Video'),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(12),
+                              backgroundColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('OR', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  Expanded(child: Divider()),
+                ],
+              ),
+            ),
+
             if (selectedVideoPath != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Card(
                   child: ListTile(
                     leading: const Icon(Icons.video_file, size: 40),
@@ -238,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                           : const Icon(Icons.video_library),
-                      label: Text(isPickingFile ? 'Picking...' : 'Select Video File'),
+                      label: Text(isPickingFile ? 'Picking...' : 'Select Video File from Device'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                       ),
@@ -254,18 +370,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         backgroundColor: Colors.green,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _openLiveWallpaperPicker,
-                      icon: const Icon(Icons.settings),
-                      label: const Text('Open Live Wallpaper Picker'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
                       ),
                     ),
                   ),
@@ -286,13 +390,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       SizedBox(height: 8),
-                      Text('1. Select an MP4 video file from your device'),
-                      Text('2. Tap "Set as Live Wallpaper"'),
-                      Text('3. In the system picker, select "Video Live Wallpaper"'),
-                      Text('4. Tap "Set wallpaper" to confirm'),
+                      Text(
+                        'Option 1: Download from Internet',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      Text('• Tap "Download & Set Pexels Video" button'),
+                      Text('• Wait for the download to complete'),
+                      Text('• The wallpaper picker will open automatically'),
                       SizedBox(height: 8),
                       Text(
-                        'Note: User interaction is required due to Android security policies.',
+                        'Option 2: Use Local Video File',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      Text('• Tap "Select Video File from Device"'),
+                      Text('• Choose an MP4 video from your device'),
+                      Text('• Tap "Set as Live Wallpaper" button'),
+                      SizedBox(height: 8),
+                      Text(
+                        'Final Steps (Both Options):',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      Text('• In the system picker, select "Live Wallpaper Service"'),
+                      Text('• Tap "Set wallpaper" to confirm'),
+                      Text('• Return to the app to see success notification'),
+                      SizedBox(height: 8),
+                      Text(
+                        'Note: User interaction is required due to Android security policies. The wallpaper will loop continuously and play without sound.',
                         style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
                       ),
                     ],

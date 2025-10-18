@@ -5,8 +5,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -14,16 +20,15 @@ import io.flutter.plugin.common.MethodChannel.Result
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
+import android.app.Activity
 
 /** WallpaperManagerPlusPlugin */
-class WallpaperManagerPlus : FlutterPlugin, MethodCallHandler {
+class WallpaperManagerPlus : FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel: MethodChannel
   private lateinit var context: Context
-
-  companion object {
-    private const val PREFS_NAME = "wallpaper_manager_plus_prefs"
-    private const val KEY_VIDEO_PATH = "live_wallpaper_video_path"
-  }
+  private var activity: Activity? = null
+  private var isSettingWallpaper = false
+  private var lifecycleObserver: LifecycleEventObserver? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "wallpaper_manager_plus")
@@ -35,7 +40,6 @@ class WallpaperManagerPlus : FlutterPlugin, MethodCallHandler {
     when (call.method) {
       "setWallpaper" -> setWallpaper(call, result)
       "setLiveWallpaper" -> setLiveWallpaper(call, result)
-      "openLiveWallpaperPicker" -> openLiveWallpaperPicker(result)
       else -> result.notImplemented()
     }
   }
@@ -82,72 +86,125 @@ class WallpaperManagerPlus : FlutterPlugin, MethodCallHandler {
   }
 
   private fun setLiveWallpaper(call: MethodCall, result: Result) {
-    val videoPath = call.argument<String>("videoPath")
-    android.util.Log.d("WallpaperManagerPlus", "setLiveWallpaper called with path: $videoPath")
-
-    if (videoPath == null) {
-      result.error("INVALID_ARGUMENT", "videoPath is missing", null)
+    val currentVideoPath = call.argument<String>("videoPath")
+    if (currentVideoPath == null) {
+      result.error("INVALID_ARGUMENT", "Video path is missing", null)
       return
     }
 
-    val file = File(videoPath)
-    if (!file.exists()) {
-      android.util.Log.e("WallpaperManagerPlus", "Video file does not exist: $videoPath")
-      result.error("FILE_NOT_FOUND", "Video file does not exist: $videoPath", null)
+    // Validate video file exists
+    val videoFile = File(currentVideoPath)
+    if (!videoFile.exists()) {
+      result.error("FILE_NOT_FOUND", "Video file does not exist: $currentVideoPath", null)
       return
     }
 
-    android.util.Log.d("WallpaperManagerPlus", "Video file exists: ${file.length()} bytes")
+    // Pass the video path to the wallpaper service
+    LiveWallpaperService.videoPath = currentVideoPath
+    isSettingWallpaper = true
 
-    try {
-      // Save video path to shared preferences so the service can access it
-      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      prefs.edit().putString(KEY_VIDEO_PATH, videoPath).apply()
-
-      // Verify it was saved
-      val savedPath = prefs.getString(KEY_VIDEO_PATH, null)
-      android.util.Log.d("WallpaperManagerPlus", "Saved and verified path: $savedPath")
-
-      // Open the live wallpaper picker with our service pre-selected
-      val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
-        putExtra(
+    CoroutineScope(Dispatchers.Main).launch {
+      try {
+        val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER)
+        intent.putExtra(
           WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-          ComponentName(context.packageName, "np.com.sawin.wallpaper_manager_plus.LiveWallpaperService")
+          ComponentName(context, LiveWallpaperService::class.java)
         )
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        if (activity != null) {
+          activity?.startActivity(intent)
+        } else {
+          context.startActivity(intent)
+        }
+
+        result.success("Live wallpaper picker opened")
+      } catch (e: Exception) {
+        // Fallback for devices that don't support ACTION_CHANGE_LIVE_WALLPAPER
+        try {
+          val intent = Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+          if (activity != null) {
+            activity?.startActivity(intent)
+          } else {
+            context.startActivity(intent)
+          }
+
+          result.success("Live wallpaper chooser opened")
+        } catch (fallbackException: Exception) {
+          isSettingWallpaper = false
+          result.error("ERROR", "Failed to open wallpaper chooser: ${fallbackException.message}", null)
+        }
       }
-
-      android.util.Log.d("WallpaperManagerPlus", "Opening picker with component: ${context.packageName}/np.com.sawin.wallpaper_manager_plus.LiveWallpaperService")
-      context.startActivity(intent)
-      result.success("Live wallpaper picker opened. Please select the wallpaper to apply.")
-
-    } catch (e: Exception) {
-      e.printStackTrace()
-      android.util.Log.e("WallpaperManagerPlus", "Error setting live wallpaper", e)
-      result.error("Exception", "Failed to set live wallpaper: ${e.localizedMessage}", null)
-    }
-  }
-
-  private fun openLiveWallpaperPicker(result: Result) {
-    try {
-      val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).apply {
-        putExtra(
-          WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-          ComponentName(context.packageName, "np.com.sawin.wallpaper_manager_plus.LiveWallpaperService")
-        )
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      }
-
-      context.startActivity(intent)
-      result.success("Live wallpaper picker opened")
-
-    } catch (e: Exception) {
-      e.printStackTrace()
-      result.error("Exception", "Failed to open live wallpaper picker: ${e.localizedMessage}", null)
     }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+  }
+
+  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+    activity = binding.activity
+    setupLifecycleObserver(binding)
+  }
+
+  override fun onDetachedFromActivityForConfigChanges() {
+    removeLifecycleObserver()
+    activity = null
+  }
+
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    activity = binding.activity
+    setupLifecycleObserver(binding)
+  }
+
+  override fun onDetachedFromActivity() {
+    removeLifecycleObserver()
+    activity = null
+  }
+
+  private fun setupLifecycleObserver(binding: ActivityPluginBinding) {
+    val activity = binding.activity
+    if (activity is LifecycleOwner) {
+      lifecycleObserver = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME) {
+          onActivityResumed()
+        }
+      }
+      activity.lifecycle.addObserver(lifecycleObserver!!)
+    }
+  }
+
+  private fun removeLifecycleObserver() {
+    val currentActivity = activity
+    if (currentActivity is LifecycleOwner && lifecycleObserver != null) {
+      currentActivity.lifecycle.removeObserver(lifecycleObserver!!)
+      lifecycleObserver = null
+    }
+  }
+
+  private fun onActivityResumed() {
+    // Check if we were setting wallpaper and now user is back
+    if (isSettingWallpaper) {
+      isSettingWallpaper = false
+      // Check if our wallpaper service is currently set
+      val wallpaperManager = WallpaperManager.getInstance(context)
+      try {
+        val info = wallpaperManager.wallpaperInfo
+        if (info != null && info.packageName == context.packageName) {
+          activity?.runOnUiThread {
+            Toast.makeText(
+              context,
+              "Live wallpaper set successfully!",
+              Toast.LENGTH_LONG
+            ).show()
+          }
+        }
+      } catch (e: Exception) {
+        // Silently handle any exceptions when checking wallpaper info
+        e.printStackTrace()
+      }
+    }
   }
 }

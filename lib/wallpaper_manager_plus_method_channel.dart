@@ -47,20 +47,6 @@ class MethodChannelWallpaperManagerPlus extends WallpaperManagerPlusPlatform {
     }
   }
 
-  @override
-  Future<String?> openLiveWallpaperPicker() async {
-    try {
-      final String? result = await methodChannel.invokeMethod<String>(
-        'openLiveWallpaperPicker',
-      );
-      return result;
-    } on PlatformException catch (e) {
-      throw Exception('Failed to open live wallpaper picker: ${e.message}');
-    } catch (e) {
-      throw Exception('Unexpected error: $e');
-    }
-  }
-
   /// Reads the file at [filePath] and returns its byte data.
   ///
   /// Throws an [Exception] if the file cannot be read.

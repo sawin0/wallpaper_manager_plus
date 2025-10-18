@@ -59,19 +59,5 @@ class WallpaperManagerPlus {
       rethrow;
     }
   }
-
-  /// Opens the system's live wallpaper picker.
-  ///
-  /// This allows users to select and apply the live wallpaper service.
-  /// Use this if you want to let users pick the wallpaper without setting
-  /// a specific video first.
-  Future<String?> openLiveWallpaperPicker() async {
-    try {
-      return await WallpaperManagerPlusPlatform.instance
-          .openLiveWallpaperPicker();
-    } catch (e) {
-      rethrow;
-    }
-  }
 }
 

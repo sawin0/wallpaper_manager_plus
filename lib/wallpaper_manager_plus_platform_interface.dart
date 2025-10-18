@@ -44,9 +44,4 @@ abstract class WallpaperManagerPlusPlatform extends PlatformInterface {
   Future<String?> setLiveWallpaper(String videoPath) {
     throw UnimplementedError('setLiveWallpaper() has not been implemented.');
   }
-
-  /// Opens the system's live wallpaper picker.
-  Future<String?> openLiveWallpaperPicker() {
-    throw UnimplementedError('openLiveWallpaperPicker() has not been implemented.');
-  }
 }

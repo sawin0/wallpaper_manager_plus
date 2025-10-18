@@ -14,12 +14,6 @@ class MockWallpaperManagerPlusPlatform
   }
 
   @override
-  Future<String?> openLiveWallpaperPicker() {
-    // TODO: implement openLiveWallpaperPicker
-    throw UnimplementedError();
-  }
-
-  @override
   Future<String?> setLiveWallpaper(String videoPath) {
     // TODO: implement setLiveWallpaper
     throw UnimplementedError();
