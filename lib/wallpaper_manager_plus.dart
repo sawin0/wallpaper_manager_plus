@@ -1,4 +1,5 @@
 import 'wallpaper_manager_plus_platform_interface.dart';
+import 'dart:io';
 
 class WallpaperManagerPlus {
   static const int homeScreen = 1;
@@ -31,4 +32,32 @@ class WallpaperManagerPlus {
       rethrow;
     }
   }
+
+  /// Sets a live wallpaper from a video file (MP4, etc.).
+  ///
+  /// This will save the video path and open the system's live wallpaper picker
+  /// where the user must manually select and apply the wallpaper.
+  ///
+  /// [videoFile] can be a File object or a String path to the video file.
+  ///
+  /// Returns a success message when the picker is opened.
+  /// User interaction is required to complete the wallpaper setup.
+  Future<String?> setLiveWallpaper(dynamic videoFile) async {
+    try {
+      String path;
+      if (videoFile is File) {
+        path = videoFile.path;
+      } else if (videoFile is String) {
+        path = videoFile;
+      } else {
+        throw ArgumentError('videoFile must be a File or String path');
+      }
+
+      return await WallpaperManagerPlusPlatform.instance
+          .setLiveWallpaper(path);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
+

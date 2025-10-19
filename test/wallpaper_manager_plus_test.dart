@@ -12,6 +12,12 @@ class MockWallpaperManagerPlusPlatform
   Future<String?> setWallpaper(imagefile, location) async {
     return null;
   }
+
+  @override
+  Future<String?> setLiveWallpaper(String videoPath) {
+    // TODO: implement setLiveWallpaper
+    throw UnimplementedError();
+  }
 }
 
 void main() {

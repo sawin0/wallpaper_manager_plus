@@ -32,6 +32,21 @@ class MethodChannelWallpaperManagerPlus extends WallpaperManagerPlusPlatform {
     }
   }
 
+  @override
+  Future<String?> setLiveWallpaper(String videoPath) async {
+    try {
+      final String? result = await methodChannel.invokeMethod<String>(
+        'setLiveWallpaper',
+        {'videoPath': videoPath},
+      );
+      return result;
+    } on PlatformException catch (e) {
+      throw Exception('Failed to set live wallpaper: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
   /// Reads the file at [filePath] and returns its byte data.
   ///
   /// Throws an [Exception] if the file cannot be read.
@@ -45,3 +60,4 @@ class MethodChannelWallpaperManagerPlus extends WallpaperManagerPlusPlatform {
     }
   }
 }
+

@@ -1,6 +1,6 @@
 # 📱 wallpaper\_manager\_plus
 
-**A modern, lightweight Flutter plugin to set wallpapers on Android Home Screen, Lock Screen, or both. Built for performance, reliability, and large image support.**
+**A modern, lightweight Flutter plugin to set wallpapers on Android Home Screen, Lock Screen, or both. Supports static images and live video wallpapers. Built for performance, reliability, and large image support.**
 
 ---
 
@@ -18,6 +18,7 @@
 ## 🚀 Key Features
 
 * 🏠 Set wallpaper on **Home Screen**, **Lock Screen**, or **Both**
+* 🎬 Set **Live Wallpapers** using video files (MP4)
 * 🖼️ Seamless support for **large images**
 * 💾 Works with **cached network images** and **local files**
 * ⚡ Lightweight and **easy to integrate**
@@ -88,6 +89,40 @@ int location = WallpaperManagerPlus.HOME_SCREEN;
 
 await WallpaperManagerPlus().setWallpaper(imagePath, location);
 ```
+
+---
+
+### 🔹 Set Live Wallpaper (Video)
+
+Set a video file as a live wallpaper:
+
+```dart
+String videoPath = '/storage/emulated/0/Download/video.mp4';
+
+await WallpaperManagerPlus().setLiveWallpaper(videoPath);
+```
+
+**Download and set from URL:**
+
+```dart
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+String videoUrl = 'https://example.com/video.mp4';
+var fileInfo = await DefaultCacheManager().downloadFile(videoUrl);
+String videoPath = fileInfo.file.path;
+
+await WallpaperManagerPlus().setLiveWallpaper(videoPath);
+```
+
+📌 *The system wallpaper picker will open. Select your wallpaper service and confirm.*
+
+---
+
+## 📷 Demo
+
+A small demo GIF included in this repository (see `gifs/wallpaper.gif`):
+
+![Wallpaper demo](gifs/wallpaper.gif)
 
 ---
 
