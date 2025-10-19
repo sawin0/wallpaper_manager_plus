@@ -118,6 +118,14 @@ await WallpaperManagerPlus().setLiveWallpaper(videoPath);
 
 ---
 
+## 📷 Demo
+
+A small demo GIF included in this repository (see `gifs/wallpaper.gif`):
+
+![Wallpaper demo](gifs/wallpaper.gif)
+
+---
+
 ## 💡 Full Example
 
 Check out the [example/](example) directory for a complete working example.
