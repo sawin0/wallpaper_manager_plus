@@ -1,3 +1,6 @@
+## 2.0.1
+* Fixed pub issues.
+
 ## 2.0.0
 * Support: Added live wallpaper support — set MP4 videos as live wallpapers.
 
