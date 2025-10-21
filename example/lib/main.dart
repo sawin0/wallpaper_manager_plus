@@ -73,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Video selected: ${result.files.single.name}')),
+            SnackBar(
+                content: Text('Video selected: ${result.files.single.name}')),
           );
         }
       }
@@ -99,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final result = await wallpaperManagerPlus.setLiveWallpaper(selectedVideoPath!);
+      final result =
+          await wallpaperManagerPlus.setLiveWallpaper(selectedVideoPath!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(result ?? 'Live wallpaper picker opened')),
@@ -140,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
         final videoPath = fileInfo.file.path;
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Video downloaded! Opening wallpaper picker...')),
+          const SnackBar(
+              content: Text('Video downloaded! Opening wallpaper picker...')),
         );
 
         // Set the downloaded video as live wallpaper
@@ -214,21 +217,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: <Widget>[
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => _setWallpaper(WallpaperManagerPlus.homeScreen),
+                      onPressed: () =>
+                          _setWallpaper(WallpaperManagerPlus.homeScreen),
                       child: const Text('Home Screen'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => _setWallpaper(WallpaperManagerPlus.lockScreen),
+                      onPressed: () =>
+                          _setWallpaper(WallpaperManagerPlus.lockScreen),
                       child: const Text('Lock Screen'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => _setWallpaper(WallpaperManagerPlus.bothScreens),
+                      onPressed: () =>
+                          _setWallpaper(WallpaperManagerPlus.bothScreens),
                       child: const Text('Both Screens'),
                     ),
                   ),
@@ -264,7 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Expanded(
                             child: Text(
                               'Download from Internet',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ),
                         ],
@@ -280,7 +287,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             const LinearProgressIndicator(),
                             const SizedBox(height: 8),
-                            const Text('Downloading video...', style: TextStyle(fontSize: 12)),
+                            const Text('Downloading video...',
+                                style: TextStyle(fontSize: 12)),
                           ],
                         )
                       else
@@ -309,7 +317,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(child: Divider()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('OR', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('OR',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Expanded(child: Divider()),
                 ],
@@ -318,7 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
             if (selectedVideoPath != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Card(
                   child: ListTile(
                     leading: const Icon(Icons.video_file, size: 40),
@@ -349,12 +359,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: isPickingFile ? null : _pickVideoFile,
                       icon: isPickingFile
                           ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Icon(Icons.video_library),
-                      label: Text(isPickingFile ? 'Picking...' : 'Select Video File from Device'),
+                      label: Text(isPickingFile
+                          ? 'Picking...'
+                          : 'Select Video File from Device'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                       ),
@@ -364,7 +376,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: selectedVideoPath != null ? _setLiveWallpaper : null,
+                      onPressed:
+                          selectedVideoPath != null ? _setLiveWallpaper : null,
                       icon: const Icon(Icons.wallpaper),
                       label: const Text('Set as Live Wallpaper'),
                       style: ElevatedButton.styleFrom(
@@ -387,12 +400,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'ℹ️ Live Wallpaper Instructions:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       SizedBox(height: 8),
                       Text(
                         'Option 1: Download from Internet',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Text('• Tap "Download & Set Pexels Video" button'),
                       Text('• Wait for the download to complete'),
@@ -400,7 +415,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: 8),
                       Text(
                         'Option 2: Use Local Video File',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Text('• Tap "Select Video File from Device"'),
                       Text('• Choose an MP4 video from your device'),
@@ -408,15 +424,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: 8),
                       Text(
                         'Final Steps (Both Options):',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      Text('• In the system picker, select "Live Wallpaper Service"'),
+                      Text(
+                          '• In the system picker, select "Live Wallpaper Service"'),
                       Text('• Tap "Set wallpaper" to confirm'),
                       Text('• Return to the app to see success notification'),
                       SizedBox(height: 8),
                       Text(
                         'Note: User interaction is required due to Android security policies. The wallpaper will loop continuously and play without sound.',
-                        style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                        style: TextStyle(
+                            fontSize: 12, fontStyle: FontStyle.italic),
                       ),
                     ],
                   ),

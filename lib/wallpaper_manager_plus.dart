@@ -53,11 +53,9 @@ class WallpaperManagerPlus {
         throw ArgumentError('videoFile must be a File or String path');
       }
 
-      return await WallpaperManagerPlusPlatform.instance
-          .setLiveWallpaper(path);
+      return await WallpaperManagerPlusPlatform.instance.setLiveWallpaper(path);
     } catch (e) {
       rethrow;
     }
   }
 }
-
