@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.wallpaper_manager_plus_example"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.14206865"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
