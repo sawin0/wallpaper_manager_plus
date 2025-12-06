@@ -1,3 +1,6 @@
+## 2.0.2
+* Use File type instead of dynamic for setWallpaper parameter
+
 ## 2.0.1
 * Fixed pub issues.
 
