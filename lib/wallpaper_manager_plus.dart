@@ -18,7 +18,7 @@ class WallpaperManagerPlus {
   /// It can be [homeScreen], [lockScreen], or [bothScreens].
   ///
   /// Throws an [ArgumentError] if [location] is invalid.
-  Future<String?> setWallpaper(dynamic imageFile, int location) async {
+  Future<String?> setWallpaper(File imageFile, int location) async {
     if (location != homeScreen &&
         location != lockScreen &&
         location != bothScreens) {
