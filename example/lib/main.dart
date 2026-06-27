@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
-import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.video,
         allowMultiple: false,
       );
