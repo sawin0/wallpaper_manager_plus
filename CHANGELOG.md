@@ -1,5 +1,8 @@
-## 2.0.3
+## 2.0.4
 * Migrate to Built-in Kotlin and update Gradle/AGP versions
+
+## 2.0.3
+* Update README
 
 ## 2.0.2
 * Use File type instead of dynamic for setWallpaper parameter
